@@ -1,11 +1,4 @@
-﻿
-using AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Phorum.AppConstants;
-using Phorum.Entities;
-using Phorum.Identity;
+﻿using Microsoft.AspNetCore.Mvc;
 using Phorum.Models;
 using Phorum.Services;
 
@@ -15,7 +8,6 @@ namespace Phorum.Controllers
     [Route("api/phorum/account")]
     public class UsersController : ControllerBase
     {
-
         private readonly IUserService _userService;
 
         public UsersController(IUserService userService)
@@ -23,7 +15,7 @@ namespace Phorum.Controllers
             _userService = userService;
         }
 
-    
+
         [HttpPost("register")]
         public ActionResult Register([FromBody] RegisterUserDTO model)
         {
@@ -31,9 +23,7 @@ namespace Phorum.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             _userService.RegisterUser(model);
-
             return Ok();
         }
 
@@ -44,11 +34,8 @@ namespace Phorum.Controllers
             {
                 return BadRequest(ModelState);
             }
-
             var login = _userService.Authenticate(model);
-
             return Ok(login);
         }
-       
     }
 }

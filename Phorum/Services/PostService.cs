@@ -56,7 +56,7 @@ namespace Phorum.Services
                        Id = post.User.Id,
                        Name = post.User.Name
                    }
-               }).ToList();
+               }).OrderByDescending(post=> post.CreatedAt).ToList();
 
             return posts;
         }

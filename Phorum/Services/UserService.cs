@@ -12,14 +12,12 @@ namespace Phorum.Services
     {
         private readonly IPasswordHasher<User> _passwordHasher;
         private readonly PhorumContext _phorumContext;
-        private readonly ILogger _logger;
         private readonly IMapper _autoMapper;
         private readonly IJwtProvider _jwtProvider;
-        public UserService(IPasswordHasher<User> passwordHasher, PhorumContext phorumContext,ILogger logger, IMapper autoMapper, IJwtProvider jwtProvider)
+        public UserService(IPasswordHasher<User> passwordHasher, PhorumContext phorumContext, IMapper autoMapper, IJwtProvider jwtProvider)
         {
             _passwordHasher = passwordHasher;
             _phorumContext = phorumContext;
-            _logger = logger;
             _autoMapper = autoMapper;
             _jwtProvider = jwtProvider;
         }
@@ -45,7 +43,6 @@ namespace Phorum.Services
             User? user = _phorumContext.User
               .Include(user => user.Role)
               .FirstOrDefault(user => user.Email == model.Email);
-
             ArgumentNullException.ThrowIfNull(user);
 
             var validPassword = _passwordHasher.VerifyHashedPassword(user, user.Password, model.Password);

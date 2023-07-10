@@ -29,14 +29,14 @@ namespace Phorum.Controllers
         }
 
         [HttpPost]
-        public ActionResult Post([FromBody] string content)
+        public ActionResult Post([FromBody] CreatePostDTO model)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            _postService.CreatePost(content);
+            _postService.CreatePost(model.Content);
 
             return Ok();
         }

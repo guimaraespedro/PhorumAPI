@@ -24,9 +24,7 @@ namespace Phorum.Controllers
         [HttpPost]
         public ActionResult Like(int postId)
         {
-
             _likeService.LikePost(postId);
-
             return Ok();
         }
 
@@ -34,10 +32,7 @@ namespace Phorum.Controllers
         public ActionResult Delete(int postId)
         {
             _likeService.DeleteLike(postId);
-
             return Ok();
-
         }
-
     }
 }
