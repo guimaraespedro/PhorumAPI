@@ -1,8 +1,8 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 
-namespace Phorum.Entities
-{
+namespace Phorum.Entities;
     public class User
     {
         public int Id { get; set; }
@@ -21,4 +21,4 @@ namespace Phorum.Entities
         public virtual List<Post> Posts { get; set; } = null!;
         public virtual List<Like> Likes { get; set; } = null!;
     }
-}
+
