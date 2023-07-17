@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Phorum.Entities;
 
@@ -11,9 +12,10 @@ using Phorum.Entities;
 namespace Phorum.Migrations
 {
     [DbContext(typeof(PhorumContext))]
-    partial class PhorumContextModelSnapshot : ModelSnapshot
+    [Migration("20230717232701_adding_refresh_token")]
+    partial class adding_refresh_token
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

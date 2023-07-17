@@ -3,6 +3,7 @@ using Phorum.Entities;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Phorum.Identity
@@ -10,10 +11,12 @@ namespace Phorum.Identity
     public class JwtProvider : IJwtProvider
     {
         private readonly IConfiguration _configuration;
+        private readonly PhorumContext _phorumContext;
 
-        public JwtProvider(IConfiguration configuration)
+        public JwtProvider(IConfiguration configuration, PhorumContext phorumContext)
         {
             _configuration = configuration;
+            _phorumContext = phorumContext; 
         }
 
         public string GenerateJwtToken(User user)
@@ -39,16 +42,33 @@ namespace Phorum.Identity
 
         }
 
-        // still need to finish that and run the migration to create the refresh token table in the database
         public string GenerateRefreshToken(User user)
         {
-            JwtOptions _jwtOptions = new JwtOptions();
+            JwtOptions _jwtOptions = new();
             _configuration.GetSection("jwt").Bind(_jwtOptions);
 
-            var refreshTokenExpiration = DateTime.Now.AddDays(_jwtOptions.RefreshTokenExpiresInDays);
+            DateTime refreshTokenExpiration = DateTime.Now.AddDays(_jwtOptions.RefreshTokenExpiresInDays);
+            byte[] randomBytes = new byte[32];
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                rng.GetBytes(randomBytes);
+            }
 
+            string token = Convert.ToBase64String(randomBytes);
 
-            return "refresh token";
+            RefreshToken refreshToken = new()
+            {
+                ExpirationDate = refreshTokenExpiration,
+                IsBlackListed = false,
+                TokenId = token,
+                User = user,
+                UserId = user.Id
+            };
+
+            _phorumContext.RefreshToken.Add(refreshToken);
+            _phorumContext.SaveChanges();
+
+            return token;
         }
     }
 }

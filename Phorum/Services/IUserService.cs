@@ -6,5 +6,8 @@ namespace Phorum.Services
     {
         public void RegisterUser(RegisterUserDTO model);
         public object Authenticate(UserLoginDTO model);
+
+        public TokenDTO RefreshToken(string refreshToken);
+
     }
 }

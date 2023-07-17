@@ -33,7 +33,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         {
             ValidIssuer = jwtOptions.JwtIssuer,
             ValidAudience = jwtOptions.JwtIssuer,
-            IssuerSigningKey = new SymmetricSecurityKey((Encoding.UTF8.GetBytes(jwtOptions.JwtKey)))
+            IssuerSigningKey = new SymmetricSecurityKey((Encoding.UTF8.GetBytes(jwtOptions.JwtKey))),
+            ClockSkew = TimeSpan.Zero,
+            ValidateLifetime = true
         };
     });
 
@@ -72,7 +74,7 @@ builder.Services.AddSwaggerGen(
                 Type = SecuritySchemeType.ApiKey,
                 In = ParameterLocation.Header,
                 Name = "Authorization",
-                Scheme = "Bearer"
+                Scheme = "Bearer",
             },
             new string[] {}
         }

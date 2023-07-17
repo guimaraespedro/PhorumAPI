@@ -37,5 +37,24 @@ namespace Phorum.Controllers
             var login = _userService.Authenticate(model);
             return Ok(login);
         }
+
+        [HttpPost("refresh-token")]
+        public ActionResult RefreshToken()
+        {
+            if (HttpContext.Request.Headers.TryGetValue("Authorization", out var authorizationHeader))
+            {
+                if (authorizationHeader.ToString().StartsWith("Bearer "))
+                {
+                    var refreshToken = authorizationHeader.ToString().Substring("Bearer ".Length);
+
+                    var newTokens = _userService.RefreshToken(refreshToken);
+
+                    return Ok(newTokens);
+                }
+            }
+            return BadRequest();
+            
+
+        }
     }
 }
