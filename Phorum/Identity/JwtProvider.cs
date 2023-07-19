@@ -1,5 +1,6 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using Phorum.Entities;
+using Phorum.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
 using System.Security.Claims;
@@ -19,7 +20,7 @@ namespace Phorum.Identity
             _phorumContext = phorumContext; 
         }
 
-        public string GenerateJwtToken(User user)
+        public AccessTokenDTO GenerateJwtToken(User user)
         {
             JwtOptions _jwtOptions = new JwtOptions();
             _configuration.GetSection("jwt").Bind(_jwtOptions);
@@ -32,14 +33,15 @@ namespace Phorum.Identity
                 new Claim(ClaimTypes.Role, user.Role.Name)
             };
 
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.JwtKey));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddMinutes(_jwtOptions.JwtExpireInMinutes);
-
-            var token = new JwtSecurityToken(_jwtOptions.JwtIssuer, _jwtOptions.JwtIssuer, claims, expires: expires, signingCredentials: credentials);
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
-
+            SymmetricSecurityKey securityKey = new(Encoding.UTF8.GetBytes(_jwtOptions.JwtKey));
+            SigningCredentials credentials = new(securityKey, SecurityAlgorithms.HmacSha256);
+            DateTime expires = DateTime.Now.AddMinutes(_jwtOptions.JwtExpireInMinutes);
+            JwtSecurityToken? token = new(_jwtOptions.JwtIssuer, _jwtOptions.JwtIssuer, claims, expires: expires, signingCredentials: credentials);         
+            AccessTokenDTO accessTokenDTO =new() { 
+               Token = new JwtSecurityTokenHandler().WriteToken(token),
+               ExpiresIn = expires,
+            };
+            return accessTokenDTO;
         }
 
         public string GenerateRefreshToken(User user)

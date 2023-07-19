@@ -54,7 +54,7 @@ namespace Phorum.Services
 
             var userDto = _autoMapper.Map<UserDTO>(user);
 
-            string accessToken = _jwtProvider.GenerateJwtToken(user);
+            AccessTokenDTO accessToken = _jwtProvider.GenerateJwtToken(user);
             string refreshToken = _jwtProvider.GenerateRefreshToken(user);
             TokenDTO tokenDTO = new ()
             {
@@ -67,7 +67,9 @@ namespace Phorum.Services
 
         public TokenDTO RefreshToken(string token)
         {
-           RefreshToken? refreshToken = _phorumContext.RefreshToken.Include(t => t.User).Include(t=> t.User.Role).FirstOrDefault(t => t.TokenId == token && !t.IsBlackListed);
+           RefreshToken? refreshToken = _phorumContext.RefreshToken.Include(t => t.User)
+                                                                   .Include(t=> t.User.Role)
+                                                                   .FirstOrDefault(t => t.TokenId == token && !t.IsBlackListed);
            TokenDTO tokens = new();
 
            if(refreshToken == null)

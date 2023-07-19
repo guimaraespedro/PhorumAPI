@@ -21,6 +21,11 @@ namespace Phorum.Services
                 throw new ArgumentNullException(nameof(postId), "post not found");
             }
             int userId = _httpContextHelper.GetUserId();
+            bool alreadyLiked = _phorumContext.Like.Any(like => like.UserId == userId && like.PostId == postId);
+            if (alreadyLiked)
+            {
+                throw new Exception("Post already liked");
+            }
             Like like = new()
             {
                 PostId = postId,

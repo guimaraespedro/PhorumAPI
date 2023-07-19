@@ -4,8 +4,14 @@ namespace Phorum.Models
 {
     public class TokenDTO
     {
-        public string AccessToken { get; set; }
+        public AccessTokenDTO AccessToken { get; set; }
         public string RefreshToken { get; set; }
 
+    }
+
+    public class AccessTokenDTO
+    {
+        public string Token { get; set; }
+        public DateTime ExpiresIn { get; set; }
     }
 }
