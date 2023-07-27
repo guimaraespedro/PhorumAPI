@@ -9,6 +9,7 @@ using System.Text;
 using Microsoft.OpenApi.Models;
 using Phorum.Services;
 using Phorum.Helpers;
+using Phorum.Repositories.UserRepository;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,6 +49,7 @@ builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddScoped<ILikeService, LikeService>();
 builder.Services.AddScoped<HttpContextHelper>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
