@@ -8,10 +8,9 @@ namespace Phorum
     {
         public PhorumProfile()
         {
-            CreateMap<User, UserDTO>();
+            CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<Post, PostDTO>()
                 .ForMember(p => p.User, map => map.MapFrom(post => post.User));
-            CreateMap<User, UserDTO>();
         }
     }
 }

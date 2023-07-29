@@ -9,6 +9,14 @@ namespace Phorum.Models
 
     }
 
+    public class AuthDTO
+    {
+        public AccessTokenDTO AccessToken { get; set; }
+        public string RefreshToken { get; set; }
+
+        public UserDTO UserDTO { get; set; }
+    }
+
     public class AccessTokenDTO
     {
         public string Token { get; set; }

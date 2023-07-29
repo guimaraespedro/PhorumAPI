@@ -5,7 +5,7 @@ namespace Phorum.Services
     public interface IUserService
     {
         public void RegisterUser(RegisterUserDTO model);
-        public object Authenticate(UserLoginDTO model);
+        public AuthDTO Authenticate(UserLoginDTO model);
 
         public TokenDTO RefreshToken(string refreshToken);
 
