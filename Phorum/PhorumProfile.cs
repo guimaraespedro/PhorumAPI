@@ -10,7 +10,12 @@ namespace Phorum
         {
             CreateMap<User, UserDTO>().ReverseMap();
             CreateMap<Post, PostDTO>()
-                .ForMember(p => p.User, map => map.MapFrom(post => post.User));
+            .ForMember(dest => dest.User, opt => opt.MapFrom(src => new UserDTO
+            {
+                Id = src.User.Id,
+                Name = src.User.Name,
+                Email = src.User.Email,
+            })).ReverseMap();
         }
     }
 }

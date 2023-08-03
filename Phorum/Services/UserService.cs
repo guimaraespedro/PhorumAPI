@@ -40,6 +40,7 @@ namespace Phorum.Services
 
         public AuthDTO Authenticate(UserLoginDTO model)
         {
+            AuthDTO authDTO = new();
             User? user = _userRepository.GetUser(model.Email);
             ArgumentNullException.ThrowIfNull(user);
 
@@ -54,12 +55,10 @@ namespace Phorum.Services
 
             AccessTokenDTO accessToken = _jwtProvider.GenerateJwtToken(user);
             string refreshToken = _jwtProvider.GenerateRefreshToken(user);
-            AuthDTO authDTO = new()
-            {
-                AccessToken = accessToken,
-                RefreshToken = refreshToken,
-                UserDTO = userDto
-            };
+           
+           authDTO.AccessToken = accessToken;
+           authDTO.RefreshToken = refreshToken;
+           authDTO.UserDTO = userDto;
 
             return authDTO;
         }

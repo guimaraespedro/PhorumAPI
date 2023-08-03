@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Phorum.Entities;
 using Phorum.Helpers;
 using Phorum.Models;
+using Phorum.Repositories.PostRepository;
 using System.Security.Claims;
 
 namespace Phorum.Services
@@ -12,10 +13,12 @@ namespace Phorum.Services
         private readonly PhorumContext _phorumContext;
         private readonly IMapper _mapper;
         private readonly HttpContextHelper _httpContextHelper;
-        public PostService(PhorumContext context, IMapper mapper, HttpContextHelper httpContextHelper) {
+        private readonly IPostRepository _postRepository;
+        public PostService(PhorumContext context, IMapper mapper, HttpContextHelper httpContextHelper, IPostRepository postRepository) {
             _phorumContext = context;
             _mapper = mapper;
             _httpContextHelper = httpContextHelper;
+            _postRepository = postRepository;
         }
 
         public void CreatePost(string content)
@@ -33,19 +36,18 @@ namespace Phorum.Services
             int userId = _httpContextHelper.GetUserId();
             post.UserId = userId;
             User? user = _phorumContext.User.Find(userId);
-            if (user == null)
-            {
-                throw new Exception();
-            }
+
+            ArgumentNullException.ThrowIfNull(user);
+
             post.User = user;
 
-            _phorumContext.Post.Add(post);
-            _phorumContext.SaveChanges();
+            _postRepository.CreatePost(post);
+            _postRepository.SaveChanges();
         }
 
         public ICollection<PostDTO> GetAllPosts()
         {
-            ICollection<PostDTO> posts = _phorumContext.Post.Include(p => p.User)
+            ICollection<PostDTO> posts =_postRepository.GetAllPosts()
                .Select(post => new PostDTO()
                {
                    Id = post.Id,
@@ -63,23 +65,13 @@ namespace Phorum.Services
 
         public PostDTO GetPostById(int postId)
         {
-            PostDTO? post = _phorumContext.Post.Include(p => p.User)
-               .Where(post => post.Id == postId)
-               .Select(post => new PostDTO()
-               {
-                   Id = post.Id,
-                   Content = post.Content,
-                   CreatedAt = post.CreatedAt,
-                   User = new()
-                   {
-                       Id = post.User.Id,
-                       Name = post.User.Name
-                   }
-               }).FirstOrDefault(); ;
+            Post? post = _postRepository.GetPostById(postId);
 
             ArgumentNullException.ThrowIfNull(post);
 
-            return post;
+            PostDTO postDTO = _mapper.Map<PostDTO>(post);
+
+            return postDTO;
         }
 
 

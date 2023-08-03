@@ -90,7 +90,35 @@ namespace UnitTests.Services
             Assert.AreEqual(result.AccessToken.ExpiresIn, expiresIn);
             Assert.IsNotNull(result.RefreshToken);
             Assert.IsNotNull(result.AccessToken.Token);
-            
+        }
+
+        [TestMethod]
+        public void RefreshToken_should_return_new_access_and_refresh_tokens()
+        {
+            string refreshToken = "refreshToken";
+            DateTime expiresIn = DateTime.Now;
+            AccessTokenDTO accessTokenDTO = new()
+            {
+                ExpiresIn = expiresIn,
+                Token = "accessToken"
+            };
+            RefreshToken refreshTokenEntity = new()
+            {
+                TokenId = refreshToken,
+                ExpirationDate = expiresIn.AddDays(2),
+                IsBlackListed = false,
+                UserId = 1
+            };
+            _jwtProviderMock.Setup(jwtProvider => jwtProvider.GenerateJwtToken(It.IsAny<User>())).Returns(accessTokenDTO);
+            _jwtProviderMock.Setup(jwtProvider => jwtProvider.GenerateRefreshToken(It.IsAny<User>())).Returns("refreshToken");
+            _userRepositoryMock.Setup(repo => repo.GetRefreshToken(refreshToken)).Returns(refreshTokenEntity);
+            // Act
+            TokenDTO result = _userService.RefreshToken(refreshToken);
+            // Assert
+            Assert.AreEqual(result.RefreshToken, refreshToken);
+            Assert.AreEqual(result.AccessToken.ExpiresIn, expiresIn);
+            Assert.IsNotNull(result.RefreshToken);
+            Assert.IsNotNull(result.AccessToken.Token);
         }
 
     }
