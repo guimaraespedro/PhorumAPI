@@ -2,7 +2,7 @@
 
 namespace Phorum.Helpers
 {
-    public class HttpContextHelper
+    public class HttpContextHelper : IHttpContextHelper
     {
         private readonly IHttpContextAccessor _httpContextAcessor;
         public HttpContextHelper(IHttpContextAccessor httpContextAccessor) {

@@ -29,6 +29,16 @@ namespace Phorum.Repositories.UserRepository
             return user;
         }
 
+        public User? GetUser(int id)
+        {
+
+            User? user = _context.User
+               .Include(user => user.Role)
+               .FirstOrDefault(user => user.Id == id);
+
+            return user;
+        }
+
         public RefreshToken? GetRefreshToken(string token)
         {
             RefreshToken? refreshToken = _context.RefreshToken.Include(t => t.User).Include(t => t.User.Role).FirstOrDefault(t => t.TokenId == token && !t.IsBlackListed);

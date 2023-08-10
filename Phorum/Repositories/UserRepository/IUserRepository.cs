@@ -7,6 +7,7 @@ namespace Phorum.Repositories.UserRepository
         void SaveChanges();
         void CreateUser(User user);
         User? GetUser(string email);
+        User? GetUser(int id);
         RefreshToken? GetRefreshToken(string token);
     }
 }

@@ -4,21 +4,22 @@ using Phorum.Entities;
 using Phorum.Helpers;
 using Phorum.Models;
 using Phorum.Repositories.PostRepository;
+using Phorum.Repositories.UserRepository;
 using System.Security.Claims;
 
 namespace Phorum.Services
 {
     public class PostService : IPostService
     {
-        private readonly PhorumContext _phorumContext;
         private readonly IMapper _mapper;
-        private readonly HttpContextHelper _httpContextHelper;
+        private readonly IHttpContextHelper _httpContextHelper;
         private readonly IPostRepository _postRepository;
-        public PostService(PhorumContext context, IMapper mapper, HttpContextHelper httpContextHelper, IPostRepository postRepository) {
-            _phorumContext = context;
+        private readonly IUserRepository _userRepository;
+        public PostService(IMapper mapper, IHttpContextHelper httpContextHelper, IPostRepository postRepository, IUserRepository userRepository) {
             _mapper = mapper;
             _httpContextHelper = httpContextHelper;
             _postRepository = postRepository;
+            _userRepository = userRepository;
         }
 
         public void CreatePost(string content)
@@ -35,7 +36,7 @@ namespace Phorum.Services
 
             int userId = _httpContextHelper.GetUserId();
             post.UserId = userId;
-            User? user = _phorumContext.User.Find(userId);
+            User? user = _userRepository.GetUser(userId);
 
             ArgumentNullException.ThrowIfNull(user);
 
@@ -79,16 +80,21 @@ namespace Phorum.Services
         {
             int userId = _httpContextHelper.GetUserId();
 
-            Post? post = _phorumContext.Post.FirstOrDefault(p => p.Id == postId && p.UserId == userId);
-
+            Post? post = _postRepository.GetPostById(postId);
             ArgumentNullException.ThrowIfNull(post);
+
+            if(post.User.Id != userId)
+            {
+                throw new Exception("cannot update a post that is not yours");
+            }
+
 
             post.Content = model.Content;
             DateTime now = DateTime.Now;
             post.UpdatedAt = now;
 
-            _phorumContext.Post.Update(post);
-            _phorumContext.SaveChanges();
+            _postRepository.UpdatePost(post);
+            _postRepository.SaveChanges();
         }
     }
 }

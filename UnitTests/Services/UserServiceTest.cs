@@ -25,13 +25,13 @@ namespace UnitTests.Services
         {
             _passwordHasherMock = new Mock<IPasswordHasher<User>>();
             _userRepositoryMock = new Mock<IUserRepository>();
+            _jwtProviderMock = new Mock<IJwtProvider>();
             var config = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<User, UserDTO>();
             });
 
             var mapper = config.CreateMapper();
-            _jwtProviderMock = new Mock<IJwtProvider>();
             _userService = new UserService(_passwordHasherMock.Object, _userRepositoryMock.Object, mapper, _jwtProviderMock.Object);
         }
 
