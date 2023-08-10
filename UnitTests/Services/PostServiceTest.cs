@@ -96,5 +96,46 @@ namespace UnitTests.Services
             _postRepositoryMock.Verify(repo => repo.SaveChanges(), Times.Once());
         }
 
+        [TestMethod]
+        public void GetPostById_ValidId_ReturnsPostDTO()
+        {
+            // Arrange
+            int postId = 1;
+            Post samplePost = new() { Id = postId, Content = "Test Post" };
+            _postRepositoryMock.Setup(repo => repo.GetPostById(postId)).Returns(samplePost);
+
+            // Act
+            PostDTO result = _postService.GetPostById(postId);
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(samplePost.Content, result.Content);
+        }
+
+        [TestMethod]
+        public void GetAllPosts_ReturnsPostDTOList()
+        {
+            // Arrange
+            User user = new()
+            {
+                DateOfBirth = DateTime.Now,
+                Email = "placeholder@email.com",
+                Name = "Jhon doe",
+                Password = "123",
+                Id = 1
+
+            };
+            Post samplePost1 = new() { Id = 1, Content = "Test Post", User = user };
+            Post samplePost2 = new() { Id = 2, Content = "Test Post", User = user };
+            List<Post> posts = new() { samplePost1, samplePost2 };
+            _postRepositoryMock.Setup(repo => repo.GetAllPosts()).Returns(posts);
+
+            // Act
+            ICollection<PostDTO> result = _postService.GetAllPosts();
+
+            // Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(posts.Count, result.Count);
+        }
     }
 }
