@@ -10,7 +10,7 @@ namespace Phorum.Services
 
         public PostDTO GetPostById(int postId);
 
-        public void UpdatePost(PostDTO model, int postId);
+        public void UpdatePost(string newContent, int postId);
 
     }
 }

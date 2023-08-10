@@ -64,13 +64,13 @@ namespace Phorum.Controllers
         }
 
         [HttpPut]
-        public ActionResult Put([FromBody] PostDTO model, int postId)
+        public ActionResult Put([FromBody] string newContent, int postId)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
-            _postService.UpdatePost(model, postId);
+            _postService.UpdatePost(newContent, postId);
 
             return Ok();
         }

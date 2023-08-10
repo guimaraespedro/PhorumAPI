@@ -76,7 +76,7 @@ namespace Phorum.Services
         }
 
 
-        public void UpdatePost(PostDTO model, int postId)
+        public void UpdatePost(string newContent, int postId)
         {
             int userId = _httpContextHelper.GetUserId();
 
@@ -89,7 +89,7 @@ namespace Phorum.Services
             }
 
 
-            post.Content = model.Content;
+            post.Content = newContent;
             DateTime now = DateTime.Now;
             post.UpdatedAt = now;
 

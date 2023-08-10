@@ -63,7 +63,38 @@ namespace UnitTests.Services
             _postRepositoryMock.Verify(repo => repo.CreatePost(It.IsAny<Post>()), Times.Once());
             _postRepositoryMock.Verify(repo => repo.SaveChanges(), Times.Once());
             _userRepositoryMock.Verify(repo => repo.GetUser(user.Id));
-
         }
+        [TestMethod]
+        public void UpdatePost_should_create_the_post_and_save_to_the_database()
+        {
+            // Arrange
+            User user = new()
+            {
+                DateOfBirth = DateTime.Now,
+                Email = "placeholder@email.com",
+                Name = "Jhon doe",
+                Password = "123",
+                Id = 1
+
+            };
+            Post post = new()
+            {
+                User = user,
+                Content = "content",
+                Id = 1,
+                UserId = user.Id
+            };
+
+            _userRepositoryMock.Setup(repo => repo.GetUser(It.Is<int>(value => value == user.Id))).Returns(user);
+            _postRepositoryMock.Setup(repo => repo.GetPostById(It.Is<int>(value => value== post.Id))).Returns(post);
+            _postRepositoryMock.Setup(repo => repo.SaveChanges());
+            _httpContextHelperMock.Setup(helper => helper.GetUserId()).Returns(user.Id);
+            // Act
+            _postService.UpdatePost("new Post", post.Id);
+            // Assert
+            _postRepositoryMock.Verify(repo => repo.UpdatePost(It.IsAny<Post>()), Times.Once());
+            _postRepositoryMock.Verify(repo => repo.SaveChanges(), Times.Once());
+        }
+
     }
 }
