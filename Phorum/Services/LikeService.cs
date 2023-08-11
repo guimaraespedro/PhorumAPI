@@ -1,28 +1,30 @@
 ﻿using Phorum.Entities;
 using Phorum.Helpers;
+using Phorum.Repositories.PostRepository;
 
 namespace Phorum.Services
 {
     public class LikeService : ILikeService
     {
-        private readonly PhorumContext _phorumContext;
-        private readonly HttpContextHelper _httpContextHelper;
-        public LikeService(PhorumContext phorumContext, HttpContextHelper httpContextHelper)
+        private readonly IPostRepository _postRepository;
+        private readonly ILikeRepository _likeRepository;
+        private readonly IHttpContextHelper _httpContextHelper;
+        public LikeService(IPostRepository postRepository, ILikeRepository likeRepository, IHttpContextHelper httpContextHelper)
         {
-            _phorumContext = phorumContext;
+            _postRepository = postRepository;
+            _likeRepository = likeRepository;
             _httpContextHelper = httpContextHelper; 
         }
 
         public void LikePost(int postId)
         {
-            bool post = _phorumContext.Post.Any(post => post.Id == postId);
-            if (!post)
-            {
-                throw new ArgumentNullException(nameof(postId), "post not found");
-            }
+            Post? post = _postRepository.GetPostById(postId);
+
+            ArgumentNullException.ThrowIfNull(post);
+
             int userId = _httpContextHelper.GetUserId();
-            bool alreadyLiked = _phorumContext.Like.Any(like => like.UserId == userId && like.PostId == postId);
-            if (alreadyLiked)
+            Like? alreadyLiked = _likeRepository.GetLikeByPostAndUserId(postId, userId);
+            if (alreadyLiked != null)
             {
                 throw new Exception("Post already liked");
             }
@@ -32,21 +34,21 @@ namespace Phorum.Services
                 UserId = userId,
             };
 
-            _phorumContext.Like.Add(like);
-            _phorumContext.SaveChanges();
+            _likeRepository.CreateLike(like);
+            _likeRepository.SaveChanges();
         }
 
         public void DeleteLike(int postId)
         {
-            Post? post = _phorumContext.Post.FirstOrDefault(post => post.Id == postId);
+            Post? post = _postRepository.GetPostById(postId);
             ArgumentNullException.ThrowIfNull(post, nameof(post));
-
-            Like? like = _phorumContext.Like.FirstOrDefault(like => like.PostId == postId);
+            int userId = _httpContextHelper.GetUserId();
+            Like? like = _likeRepository.GetLikeByPostAndUserId(postId, userId);
 
             ArgumentNullException.ThrowIfNull(like, nameof(like));
 
-            _phorumContext.Remove(like);
-            _phorumContext.SaveChanges();
+            _likeRepository.DeleteLike(like);
+            _likeRepository.SaveChanges();
         }
     }
 }
